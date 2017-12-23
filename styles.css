@@ -7,16 +7,23 @@ body {
     margin: 0 auto;
     width: 300px;
     padding: 5px;
+    text-align: center;
 }
 
 #calculator, #display {
     border: black 1px solid;
-    text-align: center;
 }
 
 #display {
-    height: 2.5em;
+    min-height: 50px;
     margin-bottom: 5px;
+    text-align: right;
+    font-size: 50px;
+    padding-right: 5px;
+}
+
+.display-level-down {
+    font-size: 40px;
 }
 
 .number {
@@ -67,7 +74,7 @@ body {
     overflow: auto;
 }
 
-#zero {
+#num0 {
     width: 129px;
     margin-right: 7px;
 }
