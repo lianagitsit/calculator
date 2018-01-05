@@ -10,16 +10,21 @@ $(document).ready(function () {
     var difference;
     var pixel = 50;
     var numbers = [];
-    var operandJustClicked = false;
 
     var display = document.getElementById("display");
 
     function getNumber() {
         //console.log("This element was clicked: " + targetValue);
         equal = true;
-        if (!(targetValue >= 0 && targetValue <= 9)) {
+        if (!((targetValue >= 0 && targetValue <= 9) || targetValue === ".")) {
             return;
         } else {
+            if (!numStr && targetValue === "."){
+                numStr = "0";
+            }
+            if (numStr.indexOf(".") !== -1 && targetValue === "."){
+                return;
+            }
             numStr += targetValue;
             display.textContent = numStr;
             sizeDisplay();
@@ -29,7 +34,7 @@ $(document).ready(function () {
     function addNumbers() {
         console.log("Numbers to be added: " + numbers);
         sum = numbers[0] + numbers[1];
-        display.textContent = sum;
+        display.textContent = parseFloat(sum);
         numbers[0] = sum;
         numbers.pop();
         console.log("Array after adding: " + numbers);
@@ -51,7 +56,7 @@ $(document).ready(function () {
         equal = false;
         //console.log("Numbers on equal: " + numbers)
         if (numbers.length === 1) {
-            numbers.push(parseInt(numStr));
+            numbers.push(parseFloat(numStr));
         }
         if (addition === true) {
             addNumbers();
@@ -98,7 +103,7 @@ $(document).ready(function () {
         if (targetValue === "=") {
             equal = true;
             equals();
-        } else if (targetValue >= 0 && targetValue <= 9) {
+        } else if ((targetValue >= 0 && targetValue <= 9) || targetValue === ".") {
             if (numStr.length >= 14) {
                 console.log("pixels: " + pixel);
                 return;
@@ -110,9 +115,8 @@ $(document).ready(function () {
                 getNumber();
             }
         } else if (numberPadOperands.indexOf(targetValue) !== -1) {
-            operandJustClicked = true;
             if (numbers.length === 0 || (numbers.length === 1 && equal === true && numStr)) {
-                numbers.push(parseInt(numStr));
+                numbers.push(parseFloat(numStr));
                 numStr = "";
                 pixel = 50;
             } else if (numbers.length === 1 && equal === false) {
@@ -127,8 +131,6 @@ $(document).ready(function () {
                     } else {
                         addNumbers();
                     }
-                    //numStr = "";
-                    //pixel = 50;
                 }
                 subtraction = false;
                 addition = true;
@@ -140,8 +142,6 @@ $(document).ready(function () {
                     } else {
                         subtractNumbers();
                     }
-                    numStr = "";
-                    pixel = 50;
                 }
                 addition = false;
                 subtraction = true;
