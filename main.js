@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function () {
     console.log("ready");
 
     var numStr = "";
@@ -10,13 +10,14 @@ $(document).ready(function(){
     var difference;
     var pixel = 50;
     var numbers = [];
+    var operandJustClicked = false;
 
     var display = document.getElementById("display");
 
     function getNumber() {
         //console.log("This element was clicked: " + targetValue);
         equal = true;
-        if (!(targetValue >= 0 && targetValue <= 9)){
+        if (!(targetValue >= 0 && targetValue <= 9)) {
             return;
         } else {
             numStr += targetValue;
@@ -35,7 +36,7 @@ $(document).ready(function(){
         sizeDisplay();
     }
 
-    function subtractNumbers(){
+    function subtractNumbers() {
         console.log("Numbers to be subtracted: " + numbers);
         difference = numbers[0] - numbers[1];
         numbers[0] = difference;
@@ -46,32 +47,32 @@ $(document).ready(function(){
         sizeDisplay();
     }
 
-    function equals(){
+    function equals() {
+        equal = false;
         //console.log("Numbers on equal: " + numbers)
-        if (numbers.length === 1){
+        if (numbers.length === 1) {
             numbers.push(parseInt(numStr));
         }
-        if (addition === true){
+        if (addition === true) {
             addNumbers();
-        } else if (subtraction === true){
+        } else if (subtraction === true) {
             subtractNumbers();
         }
-        equal = false;
     }
 
-    function sizeDisplay(){
+    function sizeDisplay() {
         if (display.textContent.toString().length > 10 && display.textContent.toString().length < 13) {
             pixel -= 5;
-        } else if (display.textContent.toString().length > 12){ 
+        } else if (display.textContent.toString().length > 12) {
             display.textContent = "ERR: OVERFLOW";
             pixel = 35;
-        } 
+        }
         display.style.fontSize = pixel + "px";
     }
 
-    function allClear(){
-        
-        if (targetValue === "AC"){
+    function allClear() {
+
+        if (targetValue === "AC") {
             display.textContent = "0";
         }
 
@@ -89,71 +90,66 @@ $(document).ready(function(){
     var numberPad = document.getElementById("number-pad");
 
     var numberPadNumbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-    var numberPadOperands = ["+", "-", "x", "&#247;", "="];
+    var numberPadOperands = ["+", "-", "x", "&#247;"];
 
-    numberPad.addEventListener("click", function(e){
+    numberPad.addEventListener("click", function (e) {
         targetValue = e.target.value;
-        // TODO: implement conditionals using indexOf in above arrays?
-        if (targetValue >= 0 && targetValue <= 9){
-            if (numStr.length >= 14){
+
+        if (targetValue === "=") {
+            equal = true;
+            equals();
+        } else if (targetValue >= 0 && targetValue <= 9) {
+            if (numStr.length >= 14) {
                 console.log("pixels: " + pixel);
                 return;
             } else {
-                if (equal === false){
+                if (equal === false) {
                     numStr = "";
                     numbers = [];
                 }
                 getNumber();
             }
-        } else if (targetValue === "+"){
-
-            // TODO: move this into its own block applied to all operands
-            if (numbers.length === 0 || (numbers.length === 1 && equal === true)){
+        } else if (numberPadOperands.indexOf(targetValue) !== -1) {
+            operandJustClicked = true;
+            if (numbers.length === 0 || (numbers.length === 1 && equal === true && numStr)) {
                 numbers.push(parseInt(numStr));
                 numStr = "";
-                pixel = 50;    
-            } else if (numbers.length === 1 && equal === false){
+                pixel = 50;
+            } else if (numbers.length === 1 && equal === false) {
                 numStr = "";
                 getNumber();
             }
-
-            if (numbers.length === 2){
-                if (subtraction === true){
-                    subtractNumbers();
-                } else {
-                    addNumbers();
+            // ADDITION
+            if (targetValue === "+") {
+                if (numbers.length === 2) {
+                    if (subtraction === true) {
+                        subtractNumbers();
+                    } else {
+                        addNumbers();
+                    }
+                    //numStr = "";
+                    //pixel = 50;
                 }
-                numStr = "";
-                pixel = 50;    
+                subtraction = false;
+                addition = true;
+
+            } else if (targetValue === "-") {
+                if (numbers.length === 2) {
+                    if (addition === true) {
+                        addNumbers();
+                    } else {
+                        subtractNumbers();
+                    }
+                    numStr = "";
+                    pixel = 50;
+                }
+                addition = false;
+                subtraction = true;
             }
-            subtraction = false;
-            addition = true;
-        } else if (targetValue === "="){
-            equal = true;
-            equals();
-        } else if (targetValue === "AC"){
+        
+        // ALL CLEAR
+        } else if (targetValue === "AC") {
             allClear();
-        } else if (targetValue === "-"){
-            if (numbers.length === 0 || (numbers.length === 1 && equal === true)){
-                numbers.push(parseInt(numStr));
-                numStr = "";
-                pixel = 50;    
-            } else if (numbers.length === 1 && equal === false){
-                numStr = "";
-                getNumber();
-            }
-
-            if (numbers.length === 2){
-                if (addition === true){
-                    addNumbers();
-                } else {
-                    subtractNumbers();
-                }
-                numStr = "";
-                pixel = 50;    
-            }
-            addition = false;
-            subtraction = true;
-        }
+        } 
     })
 })
