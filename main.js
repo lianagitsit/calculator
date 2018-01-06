@@ -10,6 +10,7 @@ $(document).ready(function () {
     var difference;
     var pixel = 50;
     var numbers = [];
+    const MAX_LENGTH = 12;
 
     var display = document.getElementById("display");
 
@@ -31,11 +32,49 @@ $(document).ready(function () {
         }
     }
 
+    function setFixedPoint(){
+        var longest = (numbers[0].toString().length - 1) - (numbers[0].toString().indexOf("."));
+        var lengthB = (numbers[1].toString().length - 1) - (numbers[1].toString().indexOf("."));
+        if (lengthB > longest){
+            longest = lengthB;
+        }
+        return longest;
+    }
+
     function addNumbers() {
+        var digits = setFixedPoint();
+        // take the sum float, convert it to an int by multiplying it by 10^digits after sum's .
+        // round it, then convert it back to a float by dividing it by 10^digits
         console.log("Numbers to be added: " + numbers);
         sum = numbers[0] + numbers[1];
-        display.textContent = parseFloat(sum);
-        numbers[0] = sum;
+        var sumStr = sum.toString();
+        var sumFinal = sumStr;
+        var sumPrecision = (sumStr.length - 1) - (sumStr.indexOf("."));
+        var sumSlice;
+
+        // if sumPrecision is absurdly large, truncate it, then cut off trailing 0s
+        if (sumPrecision > MAX_LENGTH){
+            sumSlice = sumStr.slice(0, -1);
+            console.log("precision too large, " + sumSlice.length  + " characters truncated: " + sumSlice);
+            for (var i = sumSlice.length - 1; i >= 0; i--){
+                console.log("sumSlice looping: " + i);
+                if (sumSlice.charAt(i) !== 0){
+                    sumFinal = sumSlice.slice(0, i + 1);
+                    console.log("sum final: " + sumFinal);
+                    i = -1;
+                }
+            }
+        }
+
+        /*console.log("sum digits: " + sumPrecision);
+        //var sumConverted = Math.round(sum * Math.pow(10, sumPrecision)) / Math.pow(10, sumPrecision);
+        //console.log("sum converted: " + sumConverted);
+        console.log("10 pow: " + Math.pow(10, sumPrecision));
+        console.log("times sum: " + (sum * Math.pow(10, sumPrecision)));
+        console.log("rounded: " + Math.round(sum * Math.pow(10, sumPrecision)));*/
+
+        display.textContent = parseFloat(sumFinal);//.toFixed(digits);
+        numbers[0] = parseFloat(sumFinal); //parseFloat(sum).toFixed(digits);
         numbers.pop();
         console.log("Array after adding: " + numbers);
         sizeDisplay();
@@ -66,9 +105,9 @@ $(document).ready(function () {
     }
 
     function sizeDisplay() {
-        if (display.textContent.toString().length > 10 && display.textContent.toString().length < 13) {
+        if (display.textContent.toString().length > 10 && display.textContent.toString().length <= MAX_LENGTH) {
             pixel -= 5;
-        } else if (display.textContent.toString().length > 12) {
+        } else if (display.textContent.toString().length > MAX_LENGTH) {
             display.textContent = "ERR: OVERFLOW";
             pixel = 35;
         }
@@ -104,9 +143,9 @@ $(document).ready(function () {
             equal = true;
             equals();
         } else if ((targetValue >= 0 && targetValue <= 9) || targetValue === ".") {
-            if (numStr.length >= 14) {
-                console.log("pixels: " + pixel);
-                return;
+            if (numStr.length > MAX_LENGTH) {
+                console.log("max length reached");
+                sizeDisplay();
             } else {
                 if (equal === false) {
                     numStr = "";
