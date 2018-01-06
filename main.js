@@ -20,10 +20,10 @@ $(document).ready(function () {
         if (!((targetValue >= 0 && targetValue <= 9) || targetValue === ".")) {
             return;
         } else {
-            if (!numStr && targetValue === "."){
+            if (!numStr && targetValue === ".") {
                 numStr = "0";
             }
-            if (numStr.indexOf(".") !== -1 && targetValue === "."){
+            if (numStr.indexOf(".") !== -1 && targetValue === ".") {
                 return;
             }
             numStr += targetValue;
@@ -32,10 +32,10 @@ $(document).ready(function () {
         }
     }
 
-    function setFixedPoint(){
+    function setFixedPoint() {
         var longest = (numbers[0].toString().length - 1) - (numbers[0].toString().indexOf("."));
         var lengthB = (numbers[1].toString().length - 1) - (numbers[1].toString().indexOf("."));
-        if (lengthB > longest){
+        if (lengthB > longest) {
             longest = lengthB;
         }
         return longest;
@@ -51,19 +51,36 @@ $(document).ready(function () {
         var sumFinal = sumStr;
         var sumPrecision = (sumStr.length - 1) - (sumStr.indexOf("."));
         var sumSlice;
+        var lastDigit;
 
         // if sumPrecision is absurdly large, truncate it, then cut off trailing 0s
-        if (sumPrecision > MAX_LENGTH){
+        if (sumPrecision > MAX_LENGTH) {
             sumSlice = sumStr.slice(0, -1);
-            console.log("precision too large, " + sumSlice.length  + " characters truncated: " + sumSlice);
-            for (var i = sumSlice.length - 1; i >= 0; i--){
+            console.log("precision too large, " + sumSlice.length + " characters truncated: " + sumSlice);
+            lastDigit = sumSlice.charAt(sumSlice.length - 1);
+            console.log("last: " + lastDigit);
+            for (var i = sumSlice.length - 1; i >= 0; i--) {
+                console.log("Now looping");
+                if (sumSlice.charAt(i) !== lastDigit) {
+                    if (lastDigit === "9") {
+                        sumFinal = sumSlice.slice(0, i) + (parseInt(sumSlice.charAt(i)) + 1).toString();
+                        console.log("It's 9, here's the final sum: " + sumFinal);
+                    } else if (lastDigit === "0") {
+                        sumFinal = sumSlice.slice(0, i + 1);
+                    } else {
+                        sumFinal = sumSlice.slice(0, MAX_LENGTH);
+                    }
+                    i = -1;
+                }
+            } //parse float
+            /*for (var i = sumSlice.length - 1; i >= 0; i--) {
                 console.log("sumSlice looping: " + i);
-                if (sumSlice.charAt(i) !== 0){
+                if (sumSlice.charAt(i) !== 0) {
                     sumFinal = sumSlice.slice(0, i + 1);
                     console.log("sum final: " + sumFinal);
                     i = -1;
                 }
-            }
+            }*/
         }
 
         /*console.log("sum digits: " + sumPrecision);
@@ -128,6 +145,8 @@ $(document).ready(function () {
         pixel = 50;
         numbers = [];
 
+        sizeDisplay();
+
         console.log("All cleared");
     }
 
@@ -185,10 +204,10 @@ $(document).ready(function () {
                 addition = false;
                 subtraction = true;
             }
-        
-        // ALL CLEAR
+
+            // ALL CLEAR
         } else if (targetValue === "AC") {
             allClear();
-        } 
+        }
     })
 })
