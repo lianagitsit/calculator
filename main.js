@@ -5,6 +5,8 @@ $(document).ready(function () {
     var targetValue;
     var addition = false;
     var subtraction = false;
+    var multiplication = false;
+    var division = false;
     var equal = false;
     var sum;
     var difference;
@@ -41,10 +43,58 @@ $(document).ready(function () {
         return longest;
     }
 
-    function addNumbers() {
+    function calculate(){
+        console.log("Numbers to be calculated: " + numbers);
+        var lastDigit, result, resultStr, resultPrecision, resultSlice, resultFinal;
+
+        if (addition === true){
+            result = numbers[0] + numbers[1];
+        } else if (subtraction === true){
+            result = numbers[0] - numbers [1];
+        } else if (multiplication === true){
+            result = numbers[0] * numbers[1];
+        } else if (division === true){
+            result = numbers[0] / numbers[1];
+        }
+
+        resultStr = result.toString();
+        resultFinal = resultStr;
+        resultPrecision = (resultStr.length - 1) - (resultStr.indexOf("."));
+
+
+        // if resultPrecision is absurdly large, truncate it, then cut off trailing 0s
+        if (resultPrecision > MAX_LENGTH) {
+            resultSlice = resultStr.slice(0, -1);
+            console.log("precision too large, " + resultSlice.length + " characters truncated: " + resultSlice);
+            lastDigit = resultSlice.charAt(resultSlice.length - 1);
+            console.log("last: " + lastDigit);
+            for (var i = resultSlice.length - 1; i >= 0; i--) {
+                console.log("Now looping");
+                if (resultSlice.charAt(i) !== lastDigit) {
+                    if (lastDigit === "9") {
+                        resultFinal = resultSlice.slice(0, i) + (parseInt(resultSlice.charAt(i)) + 1).toString();
+                        console.log("It's 9, here's the final result: " + resultFinal);
+                    } else if (lastDigit === "0") {
+                        resultFinal = resultSlice.slice(0, i + 1);
+                    } else {
+                        resultFinal = resultSlice.slice(0, MAX_LENGTH);
+                    }
+                    i = -1;
+                }
+            } 
+        }
+
+        
+        display.textContent = parseFloat(resultFinal);
+        numbers[0] = parseFloat(resultFinal); 
+        numbers.pop();
+        console.log("Array after calculating: " + numbers);
+        sizeDisplay();
+
+    }
+
+    /*function addNumbers() {
         var digits = setFixedPoint();
-        // take the sum float, convert it to an int by multiplying it by 10^digits after sum's .
-        // round it, then convert it back to a float by dividing it by 10^digits
         console.log("Numbers to be added: " + numbers);
         sum = numbers[0] + numbers[1];
         var sumStr = sum.toString();
@@ -72,32 +122,18 @@ $(document).ready(function () {
                     }
                     i = -1;
                 }
-            } //parse float
-            /*for (var i = sumSlice.length - 1; i >= 0; i--) {
-                console.log("sumSlice looping: " + i);
-                if (sumSlice.charAt(i) !== 0) {
-                    sumFinal = sumSlice.slice(0, i + 1);
-                    console.log("sum final: " + sumFinal);
-                    i = -1;
-                }
-            }*/
+            } 
         }
 
-        /*console.log("sum digits: " + sumPrecision);
-        //var sumConverted = Math.round(sum * Math.pow(10, sumPrecision)) / Math.pow(10, sumPrecision);
-        //console.log("sum converted: " + sumConverted);
-        console.log("10 pow: " + Math.pow(10, sumPrecision));
-        console.log("times sum: " + (sum * Math.pow(10, sumPrecision)));
-        console.log("rounded: " + Math.round(sum * Math.pow(10, sumPrecision)));*/
-
+        
         display.textContent = parseFloat(sumFinal);//.toFixed(digits);
         numbers[0] = parseFloat(sumFinal); //parseFloat(sum).toFixed(digits);
         numbers.pop();
         console.log("Array after adding: " + numbers);
         sizeDisplay();
-    }
+    }*/
 
-    function subtractNumbers() {
+    /*function subtractNumbers() {
         console.log("Numbers to be subtracted: " + numbers);
         difference = numbers[0] - numbers[1];
         numbers[0] = difference;
@@ -106,19 +142,14 @@ $(document).ready(function () {
 
         display.textContent = difference;
         sizeDisplay();
-    }
+    }*/
 
     function equals() {
         equal = false;
-        //console.log("Numbers on equal: " + numbers)
         if (numbers.length === 1) {
             numbers.push(parseFloat(numStr));
         }
-        if (addition === true) {
-            addNumbers();
-        } else if (subtraction === true) {
-            subtractNumbers();
-        }
+        calculate();
     }
 
     function sizeDisplay() {
@@ -132,28 +163,26 @@ $(document).ready(function () {
     }
 
     function allClear() {
-
         if (targetValue === "AC") {
             display.textContent = "0";
         }
-
         numStr = "";
-        addition = false;
         subtraction = false;
+        multiplication = false;
+        division = false;            
+        addition = true;
         equal = false;
-        sum = 0;
         pixel = 50;
         numbers = [];
 
         sizeDisplay();
-
         console.log("All cleared");
     }
 
     var numberPad = document.getElementById("number-pad");
 
     var numberPadNumbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-    var numberPadOperands = ["+", "-", "x", "&#247;"];
+    var numberPadOperands = ["+", "-", "x", "d"];
 
     numberPad.addEventListener("click", function (e) {
         targetValue = e.target.value;
@@ -184,25 +213,37 @@ $(document).ready(function () {
             // ADDITION
             if (targetValue === "+") {
                 if (numbers.length === 2) {
-                    if (subtraction === true) {
-                        subtractNumbers();
-                    } else {
-                        addNumbers();
-                    }
+                    calculate();
                 }
                 subtraction = false;
+                multiplication = false;
+                division = false;            
                 addition = true;
 
             } else if (targetValue === "-") {
                 if (numbers.length === 2) {
-                    if (addition === true) {
-                        addNumbers();
-                    } else {
-                        subtractNumbers();
-                    }
+                    calculate();
                 }
                 addition = false;
+                multiplication = false;
+                division = false;
                 subtraction = true;
+            } else if (targetValue === "x") {
+                if (numbers.length === 2){
+                    calculate();
+                }
+                addition = false;
+                multiplication = true;
+                division = false;
+                subtraction = false;
+            } else if (targetValue === "d"){
+                if (numbers.length === 2){
+                    calculate();
+                }
+                addition = false;
+                multiplication = false;
+                division = true;
+                subtraction = false;
             }
 
             // ALL CLEAR
