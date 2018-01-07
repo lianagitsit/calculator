@@ -16,11 +16,6 @@ $(document).ready(function () {
 
     var display = document.getElementById("display");
 
-    var numberPad = document.getElementById("number-pad");
-
-    numberPad.addEventListener("click", calculatorInputs);
-    numberPad.addEventListener("keydown", calculatorInputs);
-
     function getNumber() {
         equal = true;
         if (!((targetValue >= 0 && targetValue <= 9) || targetValue === "." || targetValue === "posneg")) {
@@ -32,10 +27,10 @@ $(document).ready(function () {
             if (numStr.indexOf(".") !== -1 && targetValue === ".") {
                 return;
             }
-            if (targetValue === "posneg"){
-                if (negative === true){
+            if (targetValue === "posneg") {
+                if (negative === true) {
                     numStr = "-" + numStr;
-                    console.log("numStr was positive, now it is: " + numStr); 
+                    console.log("numStr was positive, now it is: " + numStr);
                 } else {
                     numStr = numStr.slice(1);
                     console.log("numStr was negative, now it is: " + numStr);
@@ -48,33 +43,33 @@ $(document).ready(function () {
         }
     }
 
-    function calculate(){
+    function calculate() {
         console.log("Numbers to be calculated: " + numbers);
         var lastDigit, result, resultStr, resultPrecision, resultSlice, resultFinal;
 
-        if (addition === true){
-            if (equal === false && !numStr){
+        if (addition === true) {
+            if (equal === false && !numStr) {
                 result = numbers[0] + numbers[0];
                 numStr = numbers[0];
             } else {
                 result = numbers[0] + numbers[1];
             }
-        } else if (subtraction === true){
-            if (equal === false && !numStr){
+        } else if (subtraction === true) {
+            if (equal === false && !numStr) {
                 result = numbers[0] - numbers[0];
                 numStr = numbers[0];
             } else {
                 result = numbers[0] - numbers[1];
             }
-        } else if (multiplication === true){
-            if (equal === false && !numStr){
+        } else if (multiplication === true) {
+            if (equal === false && !numStr) {
                 result = numbers[0] * numbers[0];
                 numStr = numbers[0];
             } else {
                 result = numbers[0] * numbers[1];
             }
-        } else if (division === true){
-            if (equal === false && !numStr){
+        } else if (division === true) {
+            if (equal === false && !numStr) {
                 result = numbers[0] / numbers[0];
                 numStr = numbers[0];
             } else {
@@ -84,41 +79,44 @@ $(document).ready(function () {
 
         resultStr = result.toString();
         resultFinal = resultStr;
-        resultPrecision = (resultStr.length - 1) - (resultStr.indexOf("."));
 
+        // If the number is a float, handle precision
+        if (resultStr.indexOf(".") !== -1) {
+            resultPrecision = (resultStr.length - 1) - (resultStr.indexOf("."));
 
-        // If floating point precision produces a bonkers float, truncate the last digit and
-        // handle the remaining digits (only need to truncate for 0000000001?)
-        if (resultPrecision > MAX_LENGTH) {
-            resultSlice = resultStr.slice(0, -1);
-            console.log("precision too large, " + resultSlice.length + " characters truncated: " + resultSlice);
-            lastDigit = resultSlice.charAt(resultSlice.length - 1);
-            console.log("last: " + lastDigit);
-            for (var i = resultSlice.length - 1; i >= 0; i--) {
-                console.log("Now looping");
-                if (resultSlice.charAt(i) !== lastDigit) {
-                    if (lastDigit === "9") {
-                        resultFinal = resultSlice.slice(0, i) + (parseInt(resultSlice.charAt(i)) + 1).toString();
-                        console.log("It's 9, here's the final result: " + resultFinal);
-                    } else if (lastDigit === "0") {
-                        resultFinal = resultSlice.slice(0, i + 1);
-                    } else {
-                        resultFinal = resultSlice.slice(0, MAX_LENGTH);
+            // If floating point precision produces a bonkers float, truncate the last digit and
+            // handle the remaining digits (only need to truncate for 0000000001?)
+            if (resultPrecision > MAX_LENGTH) {
+                resultSlice = resultStr.slice(0, -1);
+                console.log("precision too large, " + resultSlice.length + " characters truncated: " + resultSlice);
+                lastDigit = resultSlice.charAt(resultSlice.length - 1);
+                console.log("last: " + lastDigit);
+                for (var i = resultSlice.length - 1; i >= 0; i--) {
+                    console.log("Now looping");
+                    if (resultSlice.charAt(i) !== lastDigit) {
+                        if (lastDigit === "9") {
+                            resultFinal = resultSlice.slice(0, i) + (parseInt(resultSlice.charAt(i)) + 1).toString();
+                            console.log("It's 9, here's the final result: " + resultFinal);
+                        } else if (lastDigit === "0") {
+                            resultFinal = resultSlice.slice(0, i + 1);
+                        } else {
+                            resultFinal = resultSlice.slice(0, MAX_LENGTH);
+                        }
+                        i = -1;
                     }
-                    i = -1;
                 }
-            } 
+            }
         }
 
-        if (division === true && numbers[1] === 0){
+        if (division === true && numbers[1] === 0) {
             console.log("can't divide by 0");
             display.textContent = ERR_DIVIDE_BY_0;
             allClear();
         } else {
             display.textContent = parseFloat(resultFinal);
-            numbers[0] = parseFloat(resultFinal); 
-            numbers.pop();   
-            sizeDisplay(); 
+            numbers[0] = parseFloat(resultFinal);
+            numbers.pop();
+            sizeDisplay();
         }
         console.log("Array after calculating: " + numbers);
     }
@@ -126,20 +124,20 @@ $(document).ready(function () {
     function sizeDisplay() {
         var displayContent = display.textContent.toString();
 
-        if (displayContent.length === MAX_LENGTH){
+        if (displayContent.length === MAX_LENGTH) {
             pixel = 40;
-        } else if (displayContent === ERR_DIVIDE_BY_0){
+        } else if (displayContent === ERR_DIVIDE_BY_0) {
             pixel = 27;
         } else if (displayContent.length > 10 && displayContent.length <= MAX_LENGTH) {
             pixel -= 5;
         } else if (displayContent.length > MAX_LENGTH) {
-            if (negative === true && displayContent.length === MAX_LENGTH + 1){
+            if (negative === true && displayContent.length === MAX_LENGTH + 1) {
                 display.textContent = numStr;
             } else {
                 display.textContent = "ERR: OVERFLOW";
                 pixel = 35;
             }
-        } 
+        }
         display.style.fontSize = pixel + "px";
     }
 
@@ -150,7 +148,7 @@ $(document).ready(function () {
         numStr = "";
         subtraction = false;
         multiplication = false;
-        division = false;            
+        division = false;
         addition = false;
         equal = false;
         negative = false;
@@ -161,42 +159,58 @@ $(document).ready(function () {
         console.log("All cleared");
     }
 
-    
+    var inputClicked = false;
+    var inputKeyed = false;
+
     function calculatorInputs(e) {
-        var numberPadOperators = ["+", "-", "x", "d"];
-        if (e.type === "click"){
+        var numberPadOperators = ["+", "-", "x", "d", "\/", "*"];
+
+        if (e.type === "click") {
             targetValue = e.target.value;
             console.log("target was CLICKED: " + targetValue);
-        } else if (e.type === "keydown"){
+            inputClicked = true;
+            inputKeyed = false;
+        } else if (e.type === "keydown") {
             targetValue = e.key;
             console.log("target was KEYDOWN: " + targetValue);
+            inputKeyed = true;
+            inputClicked = false;
         }
 
-        if (targetValue === "=" || targetValue === "Enter") {         // Equals
-            equal = false;
-            // If equal is clicked without operands...
-            if (numbers.length === 0 && !numStr){
+        if (targetValue === "Backspace") {
+            if (equal === false) {
                 return;
-            // If equal is clicked after only one operand...
-            } else if (numStr && numbers.length === 0){
+            }
+            numStr = numStr.slice(0, -1);
+            display.textContent = numStr;
+        } else if (targetValue === "=" || targetValue === "Enter") {         // Equals
+            equal = false;
+            if (targetValue === "Enter"){
+                e.preventDefault();     // Allows enter key to execute equals even if another button has focus
+            }
+            // If equal is clicked without operands...
+            if (numbers.length === 0 && !numStr) {
+                return;
+                // If equal is clicked after only one operand...
+            } else if (numStr && numbers.length === 0) {
                 console.log("numStr occupired: " + numStr);
                 numbers.push(parseFloat(numStr));
-            // If equal is clicked after a full operation...
+                // If equal is clicked after a full operation...
             } else if (numbers.length === 1) {
                 numbers.push(parseFloat(numStr));
                 calculate();
             }
             console.log("numbers on clicking equals: " + numbers);
-            
-        } else if (targetValue === "posneg"){
-            if (!numStr){
+
+        } else if (targetValue === "posneg") {
+            if (!numStr) {
                 console.log("numStr's empty, no neg toggle");
                 return;
             } else {
-                if (equal === false){
+                if (equal === false) {
                     numStr = numbers[0].toString();
-                } 
-                if (numStr.charAt(0) === "-"){
+                }
+                if (numStr.charAt(0) === "-") {
                     negative = false;
                 } else {
                     negative = true;
@@ -217,11 +231,11 @@ $(document).ready(function () {
             }
         } else if (numberPadOperators.indexOf(targetValue) !== -1) {
             if (numbers.length === 0 || (numbers.length === 1 && equal === true && numStr)) {
-                if (negative === true){
+                if (negative === true) {
                     numbers[0] = parseFloat(numStr);
                     console.log("operator clicked and neg is true, numbers are: " + numbers);
                 } else {
-                    numbers.push(parseFloat(numStr)); 
+                    numbers.push(parseFloat(numStr));
                 }
                 numStr = "";
                 pixel = 50;
@@ -235,7 +249,7 @@ $(document).ready(function () {
                 }
                 subtraction = false;
                 multiplication = false;
-                division = false;            
+                division = false;
                 addition = true;
                 negative = false;
 
@@ -249,7 +263,7 @@ $(document).ready(function () {
                 subtraction = true;
                 negative = false;
             } else if (targetValue === "x" || targetValue === "*") {   // Multiplication
-                if (numbers.length === 2){
+                if (numbers.length === 2) {
                     calculate();
                 }
                 addition = false;
@@ -257,8 +271,8 @@ $(document).ready(function () {
                 division = false;
                 subtraction = false;
                 negative = false;
-            } else if (targetValue === "d" || targetValue === "\/"){     // Division
-                if (numbers.length === 2){
+            } else if (targetValue === "d" || targetValue === "\/") {     // Division
+                if (numbers.length === 2) {
                     calculate();
                 }
                 addition = false;
@@ -269,9 +283,13 @@ $(document).ready(function () {
             }
         } else if (targetValue === "AC") {      // All clear
             allClear();
-        } else if (targetValue === "CE"){
+        } else if (targetValue === "CE") {
             numStr = "";
             display.textContent = "0";
-        } 
+        }
     }
+    var numberPad = document.getElementById("number-pad");
+
+    document.addEventListener("keydown", calculatorInputs);
+    numberPad.addEventListener("click", calculatorInputs);
 })

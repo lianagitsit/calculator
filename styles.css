@@ -30,6 +30,11 @@ body {
     width: 60px;
     font-size: 16px;
     height: 3em;
+    border: black 1px solid;
+}
+
+#num7, #num8, #num9, #multiply {
+    display: inline-block;
 }
 
 .button-row1, .button-row2, .button-row3, .button-row4 {
