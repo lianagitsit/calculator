@@ -88,14 +88,17 @@ $(document).ready(function () {
     }
 
     function sizeDisplay() {
-        if (display.textContent === ERR_DIVIDE_BY_0){
+        var displayContent = display.textContent.toString();
+        if (displayContent.length === MAX_LENGTH){
+            pixel = 40;
+        } else if (displayContent === ERR_DIVIDE_BY_0){
             pixel = 27;
-        } else if (display.textContent.toString().length > 10 && display.textContent.toString().length <= MAX_LENGTH) {
+        } else if (displayContent.length > 10 && displayContent.length <= MAX_LENGTH) {
             pixel -= 5;
-        } else if (display.textContent.toString().length > MAX_LENGTH) {
+        } else if (displayContent.length > MAX_LENGTH) {
             display.textContent = "ERR: OVERFLOW";
             pixel = 35;
-        }
+        } 
         display.style.fontSize = pixel + "px";
     }
 
@@ -146,6 +149,7 @@ $(document).ready(function () {
                 if (equal === false) {
                     numStr = "";
                     numbers = [];
+                    pixel = 50;
                 }
                 getNumber();
             }
