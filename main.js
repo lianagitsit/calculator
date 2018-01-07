@@ -37,13 +37,33 @@ $(document).ready(function () {
         var lastDigit, result, resultStr, resultPrecision, resultSlice, resultFinal;
 
         if (addition === true){
-            result = numbers[0] + numbers[1];
+            if (equal === false && !numStr){
+                result = numbers[0] + numbers[0];
+                numStr = numbers[0];
+            } else {
+                result = numbers[0] + numbers[1];
+            }
         } else if (subtraction === true){
-            result = numbers[0] - numbers [1];
+            if (equal === false && !numStr){
+                result = numbers[0] - numbers[0];
+                numStr = numbers[0];
+            } else {
+                result = numbers[0] - numbers[1];
+            }
         } else if (multiplication === true){
-            result = numbers[0] * numbers[1];
+            if (equal === false && !numStr){
+                result = numbers[0] * numbers[0];
+                numStr = numbers[0];
+            } else {
+                result = numbers[0] * numbers[1];
+            }
         } else if (division === true){
-            result = numbers[0] / numbers[1];
+            if (equal === false && !numStr){
+                result = numbers[0] / numbers[0];
+                numStr = numbers[0];
+            } else {
+                result = numbers[0] / numbers[1];
+            }
         }
 
         resultStr = result.toString();
@@ -198,6 +218,9 @@ $(document).ready(function () {
             }
         } else if (targetValue === "AC") {      // All clear
             allClear();
+        } else if (targetValue === "CE"){
+            numStr = "";
+            display.textContent = "0";
         }
     })
 })
