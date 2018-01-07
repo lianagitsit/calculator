@@ -87,14 +87,6 @@ $(document).ready(function () {
         console.log("Array after calculating: " + numbers);
     }
 
-    function equals() {
-        equal = false;
-        if (numbers.length === 1) {
-            numbers.push(parseFloat(numStr));
-        }
-        calculate();
-    }
-
     function sizeDisplay() {
         if (display.textContent === ERR_DIVIDE_BY_0){
             pixel = 27;
@@ -131,8 +123,21 @@ $(document).ready(function () {
         targetValue = e.target.value;
 
         if (targetValue === "=") {         // Equals
-            equal = true;
-            equals();
+            equal = false;
+            // If equal is clicked without operands...
+            if (numbers.length === 0 && !numStr){
+                return;
+            // If equal is clicked after only one operand...
+            } else if (numStr && numbers.length === 0){
+                console.log("numStr occupired: " + numStr);
+                numbers.push(parseFloat(numStr));
+            // If equal is clicked after a full operation...
+            } else if (numbers.length === 1) {
+                numbers.push(parseFloat(numStr));
+                calculate();
+            }
+            console.log("numbers on clicking equals: " + numbers);
+            
         } else if ((targetValue >= 0 && targetValue <= 9) || targetValue === ".") {   // 0-9 and decimal point
             if (numStr.length > MAX_LENGTH) {
                 console.log("max length reached");
