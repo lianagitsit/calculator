@@ -7,17 +7,23 @@ $(document).ready(function () {
     var subtraction = false;
     var multiplication = false;
     var division = false;
+    var negative = false;
     var equal = false;
     var pixel = 50;
     var numbers = [];
-    const MAX_LENGTH = 12;
+    const MAX_LENGTH = 11;
     const ERR_DIVIDE_BY_0 = "Can't divide by 0";
 
     var display = document.getElementById("display");
 
+    var numberPad = document.getElementById("number-pad");
+
+    numberPad.addEventListener("click", calculatorInputs);
+    numberPad.addEventListener("keydown", calculatorInputs);
+
     function getNumber() {
         equal = true;
-        if (!((targetValue >= 0 && targetValue <= 9) || targetValue === ".")) {
+        if (!((targetValue >= 0 && targetValue <= 9) || targetValue === "." || targetValue === "posneg")) {
             return;
         } else {
             if (!numStr && targetValue === ".") {
@@ -26,7 +32,17 @@ $(document).ready(function () {
             if (numStr.indexOf(".") !== -1 && targetValue === ".") {
                 return;
             }
-            numStr += targetValue;
+            if (targetValue === "posneg"){
+                if (negative === true){
+                    numStr = "-" + numStr;
+                    console.log("numStr was positive, now it is: " + numStr); 
+                } else {
+                    numStr = numStr.slice(1);
+                    console.log("numStr was negative, now it is: " + numStr);
+                }
+            } else {
+                numStr += targetValue;
+            }
             display.textContent = numStr;
             sizeDisplay();
         }
@@ -109,6 +125,7 @@ $(document).ready(function () {
 
     function sizeDisplay() {
         var displayContent = display.textContent.toString();
+
         if (displayContent.length === MAX_LENGTH){
             pixel = 40;
         } else if (displayContent === ERR_DIVIDE_BY_0){
@@ -116,8 +133,12 @@ $(document).ready(function () {
         } else if (displayContent.length > 10 && displayContent.length <= MAX_LENGTH) {
             pixel -= 5;
         } else if (displayContent.length > MAX_LENGTH) {
-            display.textContent = "ERR: OVERFLOW";
-            pixel = 35;
+            if (negative === true && displayContent.length === MAX_LENGTH + 1){
+                display.textContent = numStr;
+            } else {
+                display.textContent = "ERR: OVERFLOW";
+                pixel = 35;
+            }
         } 
         display.style.fontSize = pixel + "px";
     }
@@ -130,8 +151,9 @@ $(document).ready(function () {
         subtraction = false;
         multiplication = false;
         division = false;            
-        addition = true;
+        addition = false;
         equal = false;
+        negative = false;
         pixel = 50;
         numbers = [];
 
@@ -139,13 +161,18 @@ $(document).ready(function () {
         console.log("All cleared");
     }
 
-    var numberPad = document.getElementById("number-pad");
-
-    numberPad.addEventListener("click", function (e) {
+    
+    function calculatorInputs(e) {
         var numberPadOperators = ["+", "-", "x", "d"];
-        targetValue = e.target.value;
+        if (e.type === "click"){
+            targetValue = e.target.value;
+            console.log("target was CLICKED: " + targetValue);
+        } else if (e.type === "keydown"){
+            targetValue = e.key;
+            console.log("target was KEYDOWN: " + targetValue);
+        }
 
-        if (targetValue === "=") {         // Equals
+        if (targetValue === "=" || targetValue === "Enter") {         // Equals
             equal = false;
             // If equal is clicked without operands...
             if (numbers.length === 0 && !numStr){
@@ -161,6 +188,21 @@ $(document).ready(function () {
             }
             console.log("numbers on clicking equals: " + numbers);
             
+        } else if (targetValue === "posneg"){
+            if (!numStr){
+                console.log("numStr's empty, no neg toggle");
+                return;
+            } else {
+                if (equal === false){
+                    numStr = numbers[0].toString();
+                } 
+                if (numStr.charAt(0) === "-"){
+                    negative = false;
+                } else {
+                    negative = true;
+                }
+                getNumber();
+            }
         } else if ((targetValue >= 0 && targetValue <= 9) || targetValue === ".") {   // 0-9 and decimal point
             if (numStr.length > MAX_LENGTH) {
                 console.log("max length reached");
@@ -175,7 +217,12 @@ $(document).ready(function () {
             }
         } else if (numberPadOperators.indexOf(targetValue) !== -1) {
             if (numbers.length === 0 || (numbers.length === 1 && equal === true && numStr)) {
-                numbers.push(parseFloat(numStr));
+                if (negative === true){
+                    numbers[0] = parseFloat(numStr);
+                    console.log("operator clicked and neg is true, numbers are: " + numbers);
+                } else {
+                    numbers.push(parseFloat(numStr)); 
+                }
                 numStr = "";
                 pixel = 50;
             } else if (numbers.length === 1 && equal === false) {
@@ -190,6 +237,7 @@ $(document).ready(function () {
                 multiplication = false;
                 division = false;            
                 addition = true;
+                negative = false;
 
             } else if (targetValue === "-") {   // Subtraction
                 if (numbers.length === 2) {
@@ -199,7 +247,8 @@ $(document).ready(function () {
                 multiplication = false;
                 division = false;
                 subtraction = true;
-            } else if (targetValue === "x") {   // Multiplication
+                negative = false;
+            } else if (targetValue === "x" || targetValue === "*") {   // Multiplication
                 if (numbers.length === 2){
                     calculate();
                 }
@@ -207,7 +256,8 @@ $(document).ready(function () {
                 multiplication = true;
                 division = false;
                 subtraction = false;
-            } else if (targetValue === "d"){     // Division
+                negative = false;
+            } else if (targetValue === "d" || targetValue === "\/"){     // Division
                 if (numbers.length === 2){
                     calculate();
                 }
@@ -215,12 +265,13 @@ $(document).ready(function () {
                 multiplication = false;
                 division = true;
                 subtraction = false;
+                negative = false;
             }
         } else if (targetValue === "AC") {      // All clear
             allClear();
         } else if (targetValue === "CE"){
             numStr = "";
             display.textContent = "0";
-        }
-    })
+        } 
+    }
 })

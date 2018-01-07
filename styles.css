@@ -32,75 +32,10 @@ body {
     height: 3em;
 }
 
-.number-adjusted {
-    font-size: 16px;
-    height: 3em;
-    width: 60px;
-    display: block;
-    float: left;
-}
-
-#num1 {
-    margin-left: 2px;
-}
-
-#num2 {
-    margin-left: 9px;
-    margin-right: 10px;
-}
-
-#purple {
-    /*border: purple solid;*/
-    height: 6em;
-    width: 69%;
-    display: inline-block;
-}
-
 .button-row1, .button-row2, .button-row3, .button-row4 {
     margin-bottom: 5px;
 }
 
-.button-row4 {
-    /*border: red 1px solid;*/
-    height: 3em;
-    /*padding: 0px;
-    float: left;
-    width: 75%; */
-}
-
-.button-row5 {
-    /*border: blue 1px solid;*/
-    height: 3em;
-    overflow: auto;
-}
-
 #num0 {
     width: 129px;
-    margin-right: 7px;
-}
-
-#equal-wrapper {
-    /*border: green 1px solid; */
-    height: 6em;
-    display: block;
-    float: right;
-    width: 22%;
-    position: relative;
-    right: 13px;
-    /*bottom: 80%;
-    width: 22%;
-    float: right;
-    padding: 0px;
-    display: inline; */
-}
-
-#equal {
-    height: 96px;
-    width: 60px;
-}
-
-#decimal {
-    display: block;
-    float: right;
-    margin-right: 6px;
 }
