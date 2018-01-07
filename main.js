@@ -11,6 +11,7 @@ $(document).ready(function () {
     var pixel = 50;
     var numbers = [];
     const MAX_LENGTH = 12;
+    const ERR_DIVIDE_BY_0 = "Can't divide by 0";
 
     var display = document.getElementById("display");
 
@@ -73,12 +74,17 @@ $(document).ready(function () {
             } 
         }
 
-        
-        display.textContent = parseFloat(resultFinal);
-        numbers[0] = parseFloat(resultFinal); 
-        numbers.pop();
+        if (division === true && numbers[1] === 0){
+            console.log("can't divide by 0");
+            display.textContent = ERR_DIVIDE_BY_0;
+            allClear();
+        } else {
+            display.textContent = parseFloat(resultFinal);
+            numbers[0] = parseFloat(resultFinal); 
+            numbers.pop();   
+            sizeDisplay(); 
+        }
         console.log("Array after calculating: " + numbers);
-        sizeDisplay();
     }
 
     function equals() {
@@ -90,7 +96,9 @@ $(document).ready(function () {
     }
 
     function sizeDisplay() {
-        if (display.textContent.toString().length > 10 && display.textContent.toString().length <= MAX_LENGTH) {
+        if (display.textContent === ERR_DIVIDE_BY_0){
+            pixel = 27;
+        } else if (display.textContent.toString().length > 10 && display.textContent.toString().length <= MAX_LENGTH) {
             pixel -= 5;
         } else if (display.textContent.toString().length > MAX_LENGTH) {
             display.textContent = "ERR: OVERFLOW";
