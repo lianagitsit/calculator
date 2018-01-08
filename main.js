@@ -161,6 +161,7 @@ $(document).ready(function () {
 
     var inputClicked = false;
     var inputKeyed = false;
+    var add = document.getElementById("add");
 
     function calculatorInputs(e) {
         var numberPadOperators = ["+", "-", "x", "d", "\/", "*"];
