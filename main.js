@@ -15,7 +15,9 @@ $(document).ready(function () {
     const ERR_DIVIDE_BY_0 = "Can't divide by 0";
 
     var display = document.getElementById("display");
+    var numberPad = document.getElementById("number-pad");
 
+    // Builds the string of digits to be operand
     function getNumber() {
         equal = true;
         if (!((targetValue >= 0 && targetValue <= 9) || targetValue === "." || targetValue === "posneg")) {
@@ -30,10 +32,10 @@ $(document).ready(function () {
             if (targetValue === "posneg") {
                 if (negative === true) {
                     numStr = "-" + numStr;
-                    console.log("numStr was positive, now it is: " + numStr);
+                    //console.log("numStr was positive, now it is: " + numStr);
                 } else {
                     numStr = numStr.slice(1);
-                    console.log("numStr was negative, now it is: " + numStr);
+                    //console.log("numStr was negative, now it is: " + numStr);
                 }
             } else {
                 numStr += targetValue;
@@ -44,10 +46,11 @@ $(document).ready(function () {
     }
 
     function calculate() {
-        console.log("Numbers to be calculated: " + numbers);
+        //console.log("Numbers to be calculated: " + numbers);
         var lastDigit, result, resultStr, resultPrecision, resultSlice, resultFinal;
 
         if (addition === true) {
+            // handles user entering n+=
             if (equal === false && !numStr) {
                 result = numbers[0] + numbers[0];
                 numStr = numbers[0];
@@ -88,15 +91,14 @@ $(document).ready(function () {
             // handle the remaining digits (only need to truncate for 0000000001?)
             if (resultPrecision > MAX_LENGTH) {
                 resultSlice = resultStr.slice(0, -1);
-                console.log("precision too large, " + resultSlice.length + " characters truncated: " + resultSlice);
+                //console.log("precision too large, " + resultSlice.length + " characters truncated: " + resultSlice);
                 lastDigit = resultSlice.charAt(resultSlice.length - 1);
-                console.log("last: " + lastDigit);
+                //console.log("last: " + lastDigit);
                 for (var i = resultSlice.length - 1; i >= 0; i--) {
-                    console.log("Now looping");
+                    //console.log("Now looping");
                     if (resultSlice.charAt(i) !== lastDigit) {
                         if (lastDigit === "9") {
                             resultFinal = resultSlice.slice(0, i) + (parseInt(resultSlice.charAt(i)) + 1).toString();
-                            console.log("It's 9, here's the final result: " + resultFinal);
                         } else if (lastDigit === "0") {
                             resultFinal = resultSlice.slice(0, i + 1);
                         } else {
@@ -109,7 +111,7 @@ $(document).ready(function () {
         }
 
         if (division === true && numbers[1] === 0) {
-            console.log("can't divide by 0");
+            //console.log("can't divide by 0");
             display.textContent = ERR_DIVIDE_BY_0;
             allClear();
         } else {
@@ -118,9 +120,10 @@ $(document).ready(function () {
             numbers.pop();
             sizeDisplay();
         }
-        console.log("Array after calculating: " + numbers);
+        //console.log("Array after calculating: " + numbers);
     }
 
+    // this is technically unnecessary, but I wanted to fiddle with handling larger numbers
     function sizeDisplay() {
         var displayContent = display.textContent.toString();
 
@@ -156,26 +159,19 @@ $(document).ready(function () {
         numbers = [];
 
         sizeDisplay();
-        console.log("All cleared");
+        //console.log("All cleared");
     }
 
-    var inputClicked = false;
-    var inputKeyed = false;
-    var add = document.getElementById("add");
-
+    // event listener function
     function calculatorInputs(e) {
         var numberPadOperators = ["+", "-", "x", "d", "\/", "*"];
 
         if (e.type === "click") {
             targetValue = e.target.value;
-            console.log("target was CLICKED: " + targetValue);
-            inputClicked = true;
-            inputKeyed = false;
+            //console.log("target was CLICKED: " + targetValue);
         } else if (e.type === "keydown") {
             targetValue = e.key;
-            console.log("target was KEYDOWN: " + targetValue);
-            inputKeyed = true;
-            inputClicked = false;
+            //console.log("target was KEYDOWN: " + targetValue);
         }
 
         if (targetValue === "Backspace") {
@@ -192,20 +188,20 @@ $(document).ready(function () {
             // If equal is clicked without operands...
             if (numbers.length === 0 && !numStr) {
                 return;
-                // If equal is clicked after only one operand...
+            // If equal is clicked after only one operand...
             } else if (numStr && numbers.length === 0) {
-                console.log("numStr occupired: " + numStr);
+                //console.log("numStr occupied: " + numStr);
                 numbers.push(parseFloat(numStr));
-                // If equal is clicked after a full operation...
+            // If equal is clicked after a full operation...
             } else if (numbers.length === 1) {
                 numbers.push(parseFloat(numStr));
                 calculate();
             }
-            console.log("numbers on clicking equals: " + numbers);
+            //console.log("numbers on clicking equals: " + numbers);
 
         } else if (targetValue === "posneg") {
             if (!numStr) {
-                console.log("numStr's empty, no neg toggle");
+                //console.log("numStr's empty, no neg toggle");
                 return;
             } else {
                 if (equal === false) {
@@ -220,7 +216,7 @@ $(document).ready(function () {
             }
         } else if ((targetValue >= 0 && targetValue <= 9) || targetValue === ".") {   // 0-9 and decimal point
             if (numStr.length > MAX_LENGTH) {
-                console.log("max length reached");
+                //console.log("max length reached");
                 sizeDisplay();
             } else {
                 if (equal === false) {
@@ -230,11 +226,11 @@ $(document).ready(function () {
                 }
                 getNumber();
             }
-        } else if (numberPadOperators.indexOf(targetValue) !== -1) {
+        } else if (numberPadOperators.indexOf(targetValue) !== -1) {         // Operands
             if (numbers.length === 0 || (numbers.length === 1 && equal === true && numStr)) {
                 if (negative === true) {
                     numbers[0] = parseFloat(numStr);
-                    console.log("operator clicked and neg is true, numbers are: " + numbers);
+                    // console.log("operator clicked and neg is true, numbers are: " + numbers);
                 } else {
                     numbers.push(parseFloat(numStr));
                 }
@@ -284,12 +280,11 @@ $(document).ready(function () {
             }
         } else if (targetValue === "AC") {      // All clear
             allClear();
-        } else if (targetValue === "CE") {
+        } else if (targetValue === "CE") {      // Clear entry
             numStr = "";
             display.textContent = "0";
         }
     }
-    var numberPad = document.getElementById("number-pad");
 
     document.addEventListener("keydown", calculatorInputs);
     numberPad.addEventListener("click", calculatorInputs);
